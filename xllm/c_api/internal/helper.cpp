@@ -79,6 +79,10 @@ void set_init_options(BackendType backend_type,
     memcpy(xllm_init_options,
            &XLLM_INIT_REC_OPTIONS_DEFAULT,
            sizeof(XLLM_InitOptions));
+  } else if (backend_type == BackendType::VLM) {
+    memcpy(xllm_init_options,
+          &XLLM_INIT_VLM_OPTIONS_DEFAULT,
+          sizeof(XLLM_InitOptions));
   }
 
   if (NULL == init_options) {
@@ -149,6 +153,10 @@ void transfer_request_params(InferenceType inference_type,
     memcpy(&final_request_params,
            &XLLM_REC_REQUEST_PARAMS_DEFAULT,
            sizeof(XLLM_RequestParams));
+  } else if (inference_type == InferenceType::VLM_CHAT_COMPLETIONS) {
+    memcpy(&final_request_params,
+           &XLLM_VLM_REQUEST_PARAMS_DEFAULT,
+           sizeof(XLLM_RequestParams));
   }
 
   if (nullptr != request_params) {
@@ -159,7 +167,7 @@ void transfer_request_params(InferenceType inference_type,
 
     XLLM_SET_FIELD_IF_NONZERO(&final_request_params, request_params, n);
     XLLM_SET_FIELD_IF_NONZERO(&final_request_params, request_params, best_of);
-    XLLM_SET_FIELD_IF_NONZERO(&final_request_params, request_params, slo_ms);
+    // XLLM_SET_FIELD_IF_NONZERO(&final_request_params, request_params, slo_ms);
     XLLM_SET_FIELD_IF_NONZERO(&final_request_params, request_params, top_k);
     XLLM_SET_FIELD_IF_NONZERO(&final_request_params, request_params, top_p);
     XLLM_SET_FIELD_IF_NONZERO(
@@ -241,7 +249,8 @@ XLLM_Response* build_success_response(const InferenceType& inference_type,
       inference_type == InferenceType::REC_COMPLETIONS) {
     snprintf(response->object, sizeof(response->object), "text_completion");
   } else if (inference_type == InferenceType::LLM_CHAT_COMPLETIONS ||
-             inference_type == InferenceType::REC_CHAT_COMPLETIONS) {
+             inference_type == InferenceType::REC_CHAT_COMPLETIONS ||
+             inference_type == InferenceType::VLM_CHAT_COMPLETIONS) {
     snprintf(response->object, sizeof(response->object), "chat.completion");
   }
 
@@ -262,7 +271,8 @@ XLLM_Response* build_success_response(const InferenceType& inference_type,
       strncpy(choice.text, seq_output.text.c_str(), text_len + 1);
       choice.text[text_len] = '\0';
     } else if (inference_type == InferenceType::LLM_CHAT_COMPLETIONS ||
-               inference_type == InferenceType::REC_CHAT_COMPLETIONS) {
+               inference_type == InferenceType::REC_CHAT_COMPLETIONS ||
+               inference_type == InferenceType::VLM_CHAT_COMPLETIONS) {
       choice.message = new XLLM_ChatMessage();
       CHECK(nullptr != choice.message);
 
@@ -385,6 +395,11 @@ XLLM_Response* handle_inference_request(
                                         xllm_request_params,
                                         on_request_complete);
       }
+    } else if constexpr (std::is_same_v<HandlerType, XLLM_VLM_Handler>) {
+        handler->master->handle_request(input,
+                                        xllm_request_params,
+                                        "",
+                                        on_request_complete);
     } else {
       CHECK(false);
     }
@@ -504,6 +519,16 @@ handle_inference_request<XLLM_REC_Handler, std::vector<int>>(
     InferenceType inference_type,
     const std::string& model_id,
     const std::vector<int>& input,
+    uint32_t timeout_ms,
+    const XLLM_RequestParams* request_params);
+
+// 6. VLM Handler + std::vector<xllm::Message> (VLM chat completions)
+template XLLM_Response*
+handle_inference_request<XLLM_VLM_Handler, std::vector<xllm::Message>>(
+    XLLM_VLM_Handler* handler,
+    InferenceType inference_type,
+    const std::string& model_id,
+    const std::vector<xllm::Message>& input,
     uint32_t timeout_ms,
     const XLLM_RequestParams* request_params);
 }  // namespace helper

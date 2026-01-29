@@ -134,6 +134,62 @@ const XLLM_RequestParams XLLM_REC_REQUEST_PARAMS_DEFAULT = {
     .temperature = 0.0,
     .request_id = ""};
 
+const XLLM_InitOptions XLLM_INIT_VLM_OPTIONS_DEFAULT = {
+    .enable_mla = false,
+    .enable_chunked_prefill = false,
+    .enable_prefix_cache = false,
+    .enable_disagg_pd = false,
+    .enable_pd_ooc = false,
+    .enable_schedule_overlap = false,
+    .enable_shm = false,
+
+    .transfer_listen_port = 26000,
+    .nnodes = 1,
+    .node_rank = 0,
+    .dp_size = 1,
+    .ep_size = 1,
+    .block_size = 128,
+    .max_cache_size = 0,
+    .max_tokens_per_batch = 10240,
+    .max_seqs_per_batch = 1024,
+    .max_tokens_per_chunk_for_prefill = 0,
+    .num_speculative_tokens = 0,
+    .num_request_handling_threads = 4,
+    .expert_parallel_degree = 0,
+    .server_idx = 0,
+    .max_memory_utilization = 0.9,
+
+    .task = "generate",
+    .communication_backend = "hccl",
+    .instance_role = "DEFAULT",
+    .device_ip = "",
+    .master_node_addr = "127.0.0.1:9733",
+    .instance_name = "",
+    .kv_cache_transfer_mode = "PUSH",
+    .log_dir = "",
+    .draft_model = "",
+    .draft_devices = ""};
+
+const XLLM_RequestParams XLLM_VLM_REQUEST_PARAMS_DEFAULT = {
+    .echo = false,
+    .offline = false,
+    .logprobs = false,
+    .ignore_eos = false,
+
+    .n = 1,
+    .max_tokens = 5120,
+    .best_of = 1,
+    .slo_ms = 0,
+    .beam_width = 0,
+    .top_logprobs = 0,
+    .top_k = -1,
+    .top_p = 1.0,
+    .frequency_penalty = 0.0,
+    .presence_penalty = 0.0,
+    .repetition_penalty = 1.0,
+    .temperature = 0.0,
+    .request_id = ""};
+
 #ifdef __cplusplus
 }
 #endif

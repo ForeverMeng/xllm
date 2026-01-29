@@ -29,6 +29,7 @@ limitations under the License.
 #include "core/common/instance_name.h"
 #include "core/distributed_runtime/llm_master.h"
 #include "core/distributed_runtime/rec_master.h"
+#include "core/distributed_runtime/vlm_master.h"
 #include "core/framework/request/request_output.h"
 #include "core/framework/request/request_params.h"
 
@@ -66,6 +67,23 @@ struct XLLM_REC_Handler {
   std::unique_ptr<folly::CPUThreadPoolExecutor> executor;
 };
 
+/**
+ * @brief Opaque handle for VLM (Recommendation) inference instance
+ */
+struct XLLM_VLM_Handler {
+  /** Flag indicating if REC instance is initialized and ready for inference */
+  bool initialized{false};
+
+  /** List of loaded recommendation model IDs */
+  std::vector<std::string> model_ids;
+
+  /** Core controller for VLM runtime management */
+  std::unique_ptr<xllm::VLMMaster> master;
+
+  /** Thread pool for asynchronous recommendation task scheduling */
+  std::unique_ptr<folly::CPUThreadPoolExecutor> executor;
+};
+
 namespace xllm {
 namespace helper {
 
@@ -77,6 +95,7 @@ enum class InferenceType {
   REC_COMPLETIONS = 2,
   REC_CHAT_COMPLETIONS = 3,
   REC_TOKENID_COMPLETIONS = 4,
+  VLM_CHAT_COMPLETIONS = 5,
 };
 
 #define XLLM_SET_FIELD_IF_NONZERO(DST, SRC, FIELD) \
