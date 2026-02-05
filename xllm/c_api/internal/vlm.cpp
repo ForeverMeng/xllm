@@ -82,7 +82,7 @@ XLLM_CAPI_EXPORT bool xllm_vlm_initialize(
         .devices(devices)
         .draft_model_path(xllm_init_options.draft_model)
         .draft_devices(xllm_init_options.draft_devices)
-        .backend("rec")
+        .backend("vlm")
         .block_size(xllm_init_options.block_size)
         .max_cache_size(xllm_init_options.max_cache_size)
         .max_memory_utilization(xllm_init_options.max_memory_utilization)
@@ -114,7 +114,7 @@ XLLM_CAPI_EXPORT bool xllm_vlm_initialize(
         .is_local(true)
         .server_idx(xllm_init_options.server_idx);
 
-    handler->master = std::make_unique<xllm::RecMaster>(options);
+    handler->master = std::make_unique<xllm::VLMMaster>(options);
     handler->master->run();
 
     size_t cpu_cores = std::thread::hardware_concurrency();

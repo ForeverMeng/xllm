@@ -84,7 +84,7 @@ const XLLM_InitOptions XLLM_INIT_REC_OPTIONS_DEFAULT = {
     .enable_prefix_cache = false,
     .enable_disagg_pd = false,
     .enable_pd_ooc = false,
-    .enable_schedule_overlap = false,
+    .enable_schedule_overlap = true,
     .enable_shm = false,
 
     .transfer_listen_port = 26000,
@@ -141,7 +141,7 @@ const XLLM_InitOptions XLLM_INIT_VLM_OPTIONS_DEFAULT = {
     .enable_disagg_pd = false,
     .enable_pd_ooc = false,
     .enable_schedule_overlap = false,
-    .enable_shm = false,
+    .enable_shm = true,
 
     .transfer_listen_port = 26000,
     .nnodes = 1,
@@ -152,12 +152,12 @@ const XLLM_InitOptions XLLM_INIT_VLM_OPTIONS_DEFAULT = {
     .max_cache_size = 0,
     .max_tokens_per_batch = 10240,
     .max_seqs_per_batch = 1024,
-    .max_tokens_per_chunk_for_prefill = 0,
+    .max_tokens_per_chunk_for_prefill = -1,
     .num_speculative_tokens = 0,
     .num_request_handling_threads = 4,
     .expert_parallel_degree = 0,
     .server_idx = 0,
-    .max_memory_utilization = 0.9,
+    .max_memory_utilization = 0.86,
 
     .task = "generate",
     .communication_backend = "hccl",
