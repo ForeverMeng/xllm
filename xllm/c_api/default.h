@@ -84,7 +84,7 @@ const XLLM_InitOptions XLLM_INIT_REC_OPTIONS_DEFAULT = {
     .enable_prefix_cache = false,
     .enable_disagg_pd = false,
     .enable_pd_ooc = false,
-    .enable_schedule_overlap = true,
+    .enable_schedule_overlap = false,
     .enable_shm = false,
 
     .transfer_listen_port = 26000,
@@ -140,7 +140,7 @@ const XLLM_InitOptions XLLM_INIT_VLM_OPTIONS_DEFAULT = {
     .enable_prefix_cache = false,
     .enable_disagg_pd = false,
     .enable_pd_ooc = false,
-    .enable_schedule_overlap = false,
+    .enable_schedule_overlap = true,
     .enable_shm = true,
 
     .transfer_listen_port = 26000,
