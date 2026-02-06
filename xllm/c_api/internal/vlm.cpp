@@ -175,7 +175,37 @@ XLLM_CAPI_EXPORT XLLM_Response* xllm_vlm_chat_completions(
   std::vector<xllm::Message> xllm_messages;
   xllm_messages.reserve(messages_count);
   for (int i = 0; i < messages_count; i++) {
-    xllm_messages.emplace_back(messages[i].role, messages[i].content);
+    if (messages[i].mm_content != nullptr && messages[i].mm_content_count > 0) {
+      xllm::MMContentVec mmcont;
+      mmcont.reserve(messages[i].mm_content_count);
+      
+      for (size_t j = 0; j < messages[i].mm_content_count; j++) {
+        const auto& mm_item = messages[i].mm_content[j];
+        std::string type_str(mm_item.type);
+        
+        if (type_str == "text") {
+          mmcont.emplace_back(xllm::MMContent("text", std::string(mm_item.data)));
+        } else if (type_str == "image_url") {
+          xllm::ImageURL url;
+          url.url = std::string(mm_item.data);
+          mmcont.emplace_back(xllm::MMContent("image_url", url));
+        } else if (type_str == "video_url") {
+          xllm::VideoURL url;
+          url.url = std::string(mm_item.data);
+          mmcont.emplace_back(xllm::MMContent("video_url", url));
+        } else if (type_str == "audio_url") {
+          xllm::AudioURL url;
+          url.url = std::string(mm_item.data);
+          mmcont.emplace_back(xllm::MMContent("audio_url", url));
+        }
+      }
+      
+      xllm_messages.emplace_back(messages[i].role, mmcont);
+    } else if (messages[i].content != nullptr) {
+      xllm_messages.emplace_back(messages[i].role, std::string(messages[i].content));
+    } else {
+      xllm_messages.emplace_back(messages[i].role, "");
+    }
   }
 
   return xllm::helper::handle_inference_request(

@@ -158,7 +158,9 @@ bool VLMEngine::init_model() {
                    << ", model: " << args_.vocab_size();
     }
   }
-
+  if (FLAGS_random_seed < 0) {
+    FLAGS_random_seed = std::random_device{}() % (1 << 30);
+  }
   LOG(INFO) << "Initializing model with " << args_;
   LOG(INFO) << "Initializing model with quant args: " << quant_args_;
   LOG(INFO) << "Initializing model with tokenizer args: " << tokenizer_args_;

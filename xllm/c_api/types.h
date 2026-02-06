@@ -143,12 +143,26 @@ typedef struct XLLM_CAPI_EXPORT XLLM_InitOptions {
 /**
  * @brief Chat message structure (for ChatCompletions)
  */
+typedef struct XLLM_CAPI_EXPORT XLLM_MMContent {
+  /** Content type ("text", "image_url", "video_url", "audio_url") */
+  char type[XLLM_META_STRING_FIELD_MAX_LEN];
+  
+  /** Content data - for text: the text content, for media: the URL or base64 data */
+  char* data;
+} XLLM_MMContent;
+
 typedef struct XLLM_CAPI_EXPORT XLLM_ChatMessage {
   /** Message role (system/user/assistant) */
   char role[XLLM_META_STRING_FIELD_MAX_LEN];
 
   /** Message content (NULL for function call messages) */
   char* content;
+  
+  /** Array of multimedia content items (for MMContentVec support) */
+  XLLM_MMContent* mm_content;
+  
+  /** Number of multimedia content items */
+  size_t mm_content_count;
 } XLLM_ChatMessage;
 
 /**
